@@ -68,3 +68,31 @@ This a Online shopping system demo web application  for 3rd year 1st semester pr
 # ER Diagram
 
 ![er](https://user-images.githubusercontent.com/14239078/33282550-3029988c-d3d3-11e7-9eee-73f61d31488a.png)
+
+
+# Converted app into containers to make life easier for everyone
+
+## Podman Steps
+```
+podman run -it --rm -v "$PWD":/usr/src/mymaven -v "$HOME/.m2":/root/.m2  -w /usr/src/mymaven docker.io/maven:3.8.6-openjdk-8 mvn clean install
+
+podman run --name mysql -e MYSQL_ROOT_PASSWORD=903135 -e MYSQL_DATABASE=greenonlineshopping --network=host -d docker.io/mysql:5.5
+
+podman exec -i mysql mysql -uroot -p903135 greenonlineshopping < onlineshop.sql
+
+podman run -it --rm -v "$PWD"/target/MyOnlineShopping-0.0.1-SNAPSHOT.war:/usr/local/tomcat/webapps/MyOnlineShopping-0.0.1-SNAPSHOT.war -p 8888:8080 --network=host docker.io/tomcat:9-jre8
+```
+
+
+## Docker Steps
+```
+docker run -it --rm -v "$PWD":/usr/src/mymaven -v "$HOME/.m2":/root/.m2  -w /usr/src/mymaven docker.io/maven:3.8.6-openjdk-8 mvn clean install
+
+docker network create my-network
+
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=903135 -e MYSQL_DATABASE=greenonlineshopping --network my-network -d docker.io/mysql:5.5
+
+docker exec -i mysql mysql -uroot -p903135 greenonlineshopping < onlineshop.sql
+
+docker run -it --rm -v "$PWD"/target/MyOnlineShopping-0.0.1-SNAPSHOT.war:/usr/local/tomcat/webapps/MyOnlineShopping-0.0.1-SNAPSHOT.war -p 8888:8080 --network my-network docker.io/tomcat:9-jre8
+```
